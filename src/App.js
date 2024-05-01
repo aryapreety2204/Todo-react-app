@@ -4,7 +4,8 @@ import { useState } from 'react';
 
 var count = 0
 function App() {
-
+  
+  const [editingFlag, setEditingFlag]=useState(-1)
   const [todoList, setTodoList] = useState([
     {
       id: count++,
@@ -75,6 +76,29 @@ function App() {
       setTodoList([...tempTodoList])
     
   }
+  const editTodo = (id) =>{
+    console.log("edittodo",id)
+    setEditingFlag(id)
+  }
+  const saveEditedTodo = () =>{
+    console.log("saveTodo");
+    const updatedTodoText = document.getElementById("editingTodo").value
+    console.log("updatedTodoText:", updatedTodoText);
+    var tempTodoList = todoList.map(iterator => 
+      {
+        if(editingFlag == iterator.id)
+          {
+            iterator.todo = updatedTodoText
+            return iterator
+          }
+          else
+          {
+            return iterator
+          }
+      })
+      setTodoList(tempTodoList)
+      setEditingFlag(-1)
+  }
 
   return (
     <div>
@@ -92,13 +116,28 @@ function App() {
                 { 
                   iterator.completed == true ? 
                   <><input type="checkbox" onChange={()=>completeTodo(iterator.id)} checked/>
-                    <s>{iterator.todo}</s></>:
-                  <><input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
-                    {iterator.todo}  
+                    <s>{iterator.todo}</s>
+                  </>:
+
+                  <>
+                    { editingFlag === iterator.id ?
+                     <>
+                        <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
+                        <input type="text" defaultValue={iterator.todo} id="editingTodo"/>
+                        <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
+                        <button onClick={saveEditedTodo}>save</button>
+                      </> :
+                      <>
+                        <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
+                        {iterator.todo}  
+                        <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
+                        <button onClick={()=>editTodo(iterator.id)}>Edit</button>
+                      </>
+                    } 
                   </>
                 }
                 
-                <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
+               
                 </li>
             })
           }
