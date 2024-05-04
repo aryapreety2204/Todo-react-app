@@ -6,15 +6,16 @@ var count = 0
 const INCOMPLETED = "INCOMPLETED"
 const COMPLETED="COMPLETED"
 const ALL ="ALL"
+var countOfTodos = 0
 
 function App() {
   
   const [editingFlag, setEditingFlag]=useState(-1)
-  const [filter,setFilter] = useState(ALL)
+  const [filter,setFilter] = useState(COMPLETED)
   const [todoList, setTodoList] = useState([
     {
       id: count++,
-      todo:"need to complete homwork",
+      todo:"need to complete Home",
       completed: true
     },
     {
@@ -121,32 +122,78 @@ function App() {
         default:
       }
     }
-  return (
-    <div>
-     <h1>To-Do Application</h1>
-     <h4>(by Preety Arya)</h4>
-     
-     <div>
-      <label onClick={()=> filterTodo(INCOMPLETED)}>Incomplete</label> &nbsp;&nbsp;&nbsp;&nbsp;
-      <label onClick={()=> filterTodo(COMPLETED)}>complete</label> &nbsp;&nbsp;&nbsp;&nbsp;
-      <label onClick={()=>filterTodo(ALL)}>All</label>
-     </div>
+    // const myStyle={
+    //   backgroundColor: "#E4C2FF",
+    //   color: "red"
+    // style={myStyle} // passing in div this line
+    // }
 
-     <input type="text"  id="input" placeholder="Enter to-do here..."/>
-     <button onClick={addTodo}>Add to-do</button>
+    return ( 
+    <div>
+     <h1 className='heading'>Todo Application</h1>
+     <h4 className='sub-heading'>(by Preety Arya)</h4>
+     
+      <div className='incomplete'>
+        <label onClick={()=> filterTodo(INCOMPLETED)}>Incomplete &nbsp;|</label> &nbsp;
+        <label onClick={()=> filterTodo(COMPLETED)}>complete &nbsp; |</label> &nbsp;
+        <label onClick={()=>filterTodo(ALL)}>All</label>
+      </div>
+
+      <input type="text"  id="input" placeholder="Enter to-do here..."/>
+      <button onClick={addTodo}>Add to-do</button>
       
       <div>
-         <ul>
+         <ul className='Liststyle'>
           {
-            todoList.map(iterator=>
+            todoList.map(iterator =>
             {
+              if(todoList[0].id === iterator.id)
+              countOfTodos = 0
+
               switch(filter)
               {
                 case INCOMPLETED:
                 {
                   if (!iterator.completed)
                   {
-                     
+                     countOfTodos +=1
+                     return <li key={iterator.id}>
+              
+                            { 
+                              iterator.completed == true ? 
+                              <><input type="checkbox" onChange={()=>completeTodo(iterator.id)} checked/>
+                                <s>{iterator.todo}</s>
+                              </>:
+
+                              <>
+                                { editingFlag === iterator.id ?
+                                <>
+                                    <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
+                                    <input type="text" defaultValue={iterator.todo} id="editingTodo"/>
+                                    <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
+                                    <button onClick={saveEditedTodo}>save</button>
+                                  </> :
+                                  <>
+                                    <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
+                                    {iterator.todo}  
+                                    <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
+                                    <button onClick={()=>editTodo(iterator.id)}>Edit</button>
+                                  </>
+                                } 
+                              </>
+                            }
+                    
+                  
+                    </li>
+                    break;
+
+                  }
+
+                }
+                case COMPLETED:
+                {
+                  if(iterator.completed){
+                    countOfTodos +=1
                     return <li key={iterator.id}>
               
                             { 
@@ -175,16 +222,15 @@ function App() {
                     
                   
                     </li>
-                  break;
-
+                    break;
                   }
                 }
-              case COMPLETED:
-                    {
-                      if(iterator.completed)
-                      {
-                          return <li key={iterator.id}>
-                          { 
+               case ALL:
+               {
+                countOfTodos +=1
+                return <li key={iterator.id}>
+              
+                            { 
                               iterator.completed == true ? 
                               <><input type="checkbox" onChange={()=>completeTodo(iterator.id)} checked/>
                                 <s>{iterator.todo}</s>
@@ -206,53 +252,25 @@ function App() {
                                   </>
                                 } 
                               </>
-                          }
-                        </li>
-                          break;
-                       }
-                      
-                    }
-                case ALL: 
-                {
-                      return <li key={iterator.id}>
-                      { 
-                          iterator.completed == true ? 
-                          <><input type="checkbox" onChange={()=>completeTodo(iterator.id)} checked/>
-                            <s>{iterator.todo}</s>
-                          </>:
+                            }
+                    
+                  
+                    </li>
+                    break;
+               }
 
-                          <>
-                            { editingFlag === iterator.id ?
-                            <>
-                                <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
-                                <input type="text" defaultValue={iterator.todo} id="editingTodo"/>
-                                <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
-                                <button onClick={saveEditedTodo}>save</button>
-                              </> :
-                              <>
-                                <input type="checkbox" onChange={()=>completeTodo(iterator.id)}/>
-                                {iterator.todo}  
-                                <button onClick={()=>deleteTodo(iterator.id)}>Delete</button>
-                                <button onClick={()=>editTodo(iterator.id)}>Edit</button>
-                              </>
-                            } 
-                          </>
-                      }
-                        
-                      
-            </li>
-            break;
-                }
-                default:
-              }
-              
-              
+              default:
+            }
             })
           }
-         </ul>
-      </div>
+          </ul>
+       </div>
+          <div>
+            count: {countOfTodos}
+          </div>
     </div>
-  );
+
+);
 }
 
 export default App;
